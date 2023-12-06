@@ -8,7 +8,7 @@ class Ventana(tb.Window):
         super().__init__()
         self.ventana_login()
     
-    def ventana_login(self):
+    def ventana_login(self): # ventana por donde uno se logea al sistma 
         
         self.frame_login= Frame(self)
         self.frame_login.pack()
@@ -27,7 +27,7 @@ class Ventana(tb.Window):
         btn_acceso=ttk.Button(self.lblframe_login, text='Log in',width=38,command=self.logueo)
         btn_acceso.pack(padx=10,pady=10)
     
-    def ventana_menu(self):
+    def ventana_menu(self): #ventana menu donde se muestran las opciones 
         self.frame_left=Frame(self,width=200)
         self.frame_left.grid(row=0,column=0,sticky=NS)
         self.frame_center=Frame(self)
@@ -35,7 +35,7 @@ class Ventana(tb.Window):
         self.frame_right=Frame(self,width=400)
         self.frame_right.grid(row=0,column=2,sticky=NSEW)
         
-        btn_productos=ttk.Button(self.frame_left,text='Productos',width=15)
+        btn_productos=ttk.Button(self.frame_left,text='Productos',width=15, command=self.ventana_lista_productos)
         btn_productos.grid(row=0,column=0,padx=10,pady=10)
         btn_ventas=ttk.Button(self.frame_left,text='Ventas',width=15)
         btn_ventas.grid(row=1,column=0,padx=10,pady=10)
@@ -58,7 +58,7 @@ class Ventana(tb.Window):
         lbl3=Label(self.frame_right,text='Aqui podremos las busquedas para la venta')
         lbl3.grid(row=0,column=0,padx=10,pady=10)
     
-    def logueo(self):
+    def logueo(self):#funcion que permite logearse con usuario y clave 
         
         try:
             miConexion=sqlite3.connect('Ventas.db')
@@ -88,7 +88,7 @@ class Ventana(tb.Window):
         #self.frame_login.pack_forget() #ocultamos la ventana de login #con esta linea de codigo habilitada deja pasar a cualquiera al sistema
         self.ventana_menu()#aqui abrimos nuestra ventana menu   
     
-    def ventana_lista_usuarios(self):
+    def ventana_lista_usuarios(self): #ventana madre sobre la cual edificar el resto de los botones 
         self.frame_lista_usuarios= Frame(self.frame_center)
         self.frame_lista_usuarios.grid(row=0, column=0,columnspan=2,sticky=NSEW)
         
@@ -133,7 +133,7 @@ class Ventana(tb.Window):
         
         self.mostrar_usuarios()
               
-    def mostrar_usuarios(self):
+    def mostrar_usuarios(self): # con esta funcion se llama a la BD y se muestra los datos contenidos en ella  es utilizada al final de la funcion que implenta cada boton
         try:
             miConexion=sqlite3.connect('Ventas.db')
             miCursor= miConexion.cursor()
@@ -236,7 +236,68 @@ class Ventana(tb.Window):
             miConexion.close()        
          except: 
             messagebox.showerror("Acceso","El usuario o clave son incorrectos")  
-               
+    
+    def ventana_lista_productos(self): #ventana madre sobre la cual edificar el resto de los botones 
+        self.frame_lista_productos= Frame(self.frame_center)
+        self.frame_lista_productos.grid(row=0, column=0,columnspan=2,sticky=NSEW)
+        
+        self.lblframe_botones_listpro=LabelFrame(self.frame_lista_productos)
+        self.lblframe_botones_listpro.grid(row=0, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        btn_nuevo_producto= tb.Button(self.lblframe_botones_listpro, text='Nuevo', width=15,bootstyle="success")
+        btn_nuevo_producto.grid(row=0,column=0, padx=5,pady=5)
+        btn_modificar_producto= tb.Button(self.lblframe_botones_listpro, text='Modificar', width=15,bootstyle="warning")
+        btn_modificar_producto.grid(row=0,column=1, padx=5,pady=5)
+        btn_eliminar_producto= tb.Button(self.lblframe_botones_listpro, text='Eliminar', width=15,bootstyle="danger")
+        btn_eliminar_producto.grid(row=0,column=2, padx=5,pady=5)   
+        
+        self.lblframe_busqueda_listpro=LabelFrame(self.frame_lista_productos)
+        self.lblframe_busqueda_listpro.grid(row=1, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        txt_busqueda_producto=ttk.Entry(self.lblframe_busqueda_listpro, width=95)
+        txt_busqueda_producto.grid(row=0,column=0,padx=5,pady=5)
+        
+        #=====================Treeview===================
+        
+        self.lblframe_tree_listpro=LabelFrame(self.frame_lista_productos)
+        self.lblframe_tree_listpro.grid(row=2, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        columnas=("codigo", "descripcion", "precio pesos", "precio dolar")
+        
+        self.tree_lista_productos= tb.Treeview(self.lblframe_tree_listpro, columns=columnas,
+                                          height=17,show='headings',bootstyle='dark')
+        self.tree_lista_productos.grid(row=0, column=0)
+        
+        self.tree_lista_productos.heading("codigo", text="Codigo", anchor=W)
+        self.tree_lista_productos.heading("descripcion", text="Descripcion", anchor=W)
+        self.tree_lista_productos.heading("precio pesos", text="Precio Pesos", anchor=W)
+        self.tree_lista_productos.heading("precio dolar", text="Precio dolar", anchor=W)
+        #self.tree_lista_productos['displaycolumns']=("codigo","descripcion","precio pesos","precio dolar")#para ocultar la clave solo apareceran codigo nombre y rol# sirve para ocultar toda la ventana 
+        
+        #Crear el scrolbar
+        tree_scroll_listpro=tb.Scrollbar(self.frame_lista_productos, bootstyle='round-success')
+        tree_scroll_listpro.grid(row=2, column=1)
+        #Configurar el scrolbar
+        tree_scroll_listpro.config(command=self.tree_lista_productos.yview)
+        
+        self.mostrar_productos()
+              
+    def mostrar_productos(self): # con esta funcion se llama a la BD y se muestra los datos contenidos en ella  es utilizada al final de la funcion que implenta cada boton
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            registros=self.tree_lista_productos.get_children()
+            for elementos in registros:
+                self.tree_lista_productos.delete(elementos)
+            miCursor.execute("SELECT * FROM Productos") 
+            datos=miCursor.fetchall()   
+            for row in datos:
+                self.tree_lista_productos.insert("",0,text=row[0],values=(row[0],row[1],row[2],row[3]))
+            miConexion.commit()
+            miConexion.close()   
+             
+        except: 
+              messagebox.showerror("Lista de Producto","Ocurrio un error al mostrar la lista de productos")            
         
          
         
@@ -251,4 +312,4 @@ def main():
     app.mainloop() 
 
 if __name__=='__main__': 
-    main()  
+    main() 
