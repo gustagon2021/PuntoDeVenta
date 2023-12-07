@@ -87,7 +87,8 @@ class Ventana(tb.Window):
         
         #self.frame_login.pack_forget() #ocultamos la ventana de login #con esta linea de codigo habilitada deja pasar a cualquiera al sistema
         self.ventana_menu()#aqui abrimos nuestra ventana menu   
-    
+   
+    #==============================USUARIOS=================================#
     def ventana_lista_usuarios(self): #ventana madre sobre la cual edificar el resto de los botones 
         self.frame_lista_usuarios= Frame(self.frame_center)
         self.frame_lista_usuarios.grid(row=0, column=0,columnspan=2,sticky=NSEW)
@@ -105,9 +106,9 @@ class Ventana(tb.Window):
         self.lblframe_busqueda_listusu=LabelFrame(self.frame_lista_usuarios)
         self.lblframe_busqueda_listusu.grid(row=1, column=0,padx=10,pady=10,sticky=NSEW)
         
-        txt_busqueda_usuarios=ttk.Entry(self.lblframe_busqueda_listusu, width=95)
-        txt_busqueda_usuarios.grid(row=0,column=0,padx=5,pady=5)
-        
+        self.txt_busqueda_usuarios=ttk.Entry(self.lblframe_busqueda_listusu, width=95)
+        self.txt_busqueda_usuarios.grid(row=0,column=0,padx=5,pady=5)
+        self.txt_busqueda_usuarios.bind('<Key>', self.buscar_usuarios)
         #=====================Treeview===================
         
         self.lblframe_tree_listusu=LabelFrame(self.frame_lista_usuarios)
@@ -237,6 +238,26 @@ class Ventana(tb.Window):
          except: 
             messagebox.showerror("Acceso","El usuario o clave son incorrectos")  
     
+    def buscar_usuarios(self,event):
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            registros=self.tree_lista_usuarios.get_children()
+            for elementos in registros:
+                self.tree_lista_usuarios.delete(elementos)
+            miCursor.execute("SELECT * FROM Usuarios WHERE Nombre LIKE ?",(self.txt_busqueda_usuarios.get()
+                                                                           +'%',)) 
+            datos=miCursor.fetchall()   
+            for row in datos:
+                self.tree_lista_usuarios.insert("",0,text=row[0],values=(row[0],row[1],row[2],row[3]))
+            miConexion.commit()
+            miConexion.close()   
+             
+        except: 
+              messagebox.showerror("Busqueda de usuario","Ocurrio un error al buscar en la lista de usuarios") 
+    
+    
+    #====================================PRODUCTOS==================================#         
     def ventana_lista_productos(self): #ventana madre sobre la cual edificar el resto de los botones 
         self.frame_lista_productos= Frame(self.frame_center)
         self.frame_lista_productos.grid(row=0, column=0,columnspan=2,sticky=NSEW)
@@ -299,7 +320,7 @@ class Ventana(tb.Window):
         except: 
               messagebox.showerror("Lista de Producto","Ocurrio un error al mostrar la lista de productos")            
         
-         
+    
         
         
         
