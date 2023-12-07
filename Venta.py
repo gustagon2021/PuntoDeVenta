@@ -37,7 +37,7 @@ class Ventana(tb.Window):
         
         btn_productos=ttk.Button(self.frame_left,text='Productos',width=15, command=self.ventana_lista_productos)
         btn_productos.grid(row=0,column=0,padx=10,pady=10)
-        btn_ventas=ttk.Button(self.frame_left,text='Ventas',width=15)
+        btn_ventas=ttk.Button(self.frame_left,text='Ventas',width=15, command=self.ventana_lista_ventas)
         btn_ventas.grid(row=1,column=0,padx=10,pady=10)
         btn_clientes=ttk.Button(self.frame_left,text='Clientes',width=15)
         btn_clientes.grid(row=2,column=0,padx=10,pady=10)
@@ -320,9 +320,72 @@ class Ventana(tb.Window):
         except: 
               messagebox.showerror("Lista de Producto","Ocurrio un error al mostrar la lista de productos")            
         
-    
+    #=================================VENTAS=================================#
+    def ventana_lista_ventas(self): #ventana madre sobre la cual edificar el resto de los botones 
+        self.frame_lista_ventas= Frame(self.frame_center)
+        self.frame_lista_ventas.grid(row=0, column=0,columnspan=2,sticky=NSEW)
+        
+        self.lblframe_botones_listven=LabelFrame(self.frame_lista_ventas)
+        self.lblframe_botones_listven.grid(row=0, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        btn_nuevo_venta= tb.Button(self.lblframe_botones_listven, text='Nuevo', width=15,bootstyle="success")
+        btn_nuevo_venta.grid(row=0,column=0, padx=5,pady=5)
+        btn_modificar_venta= tb.Button(self.lblframe_botones_listven, text='Modificar', width=15,bootstyle="warning")
+        btn_modificar_venta.grid(row=0,column=1, padx=5,pady=5)
+        btn_eliminar_venta= tb.Button(self.lblframe_botones_listven, text='Eliminar', width=15,bootstyle="danger")
+        btn_eliminar_venta.grid(row=0,column=2, padx=5,pady=5)   
+        
+        self.lblframe_busqueda_listven=LabelFrame(self.frame_lista_productos)
+        self.lblframe_busqueda_listven.grid(row=1, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        txt_busqueda_venta=ttk.Entry(self.lblframe_busqueda_listven, width=95)
+        txt_busqueda_venta.grid(row=0,column=0,padx=5,pady=5)
+        
+        #=====================Treeview===================
+        
+        self.lblframe_tree_listven=LabelFrame(self.frame_lista_ventas)
+        self.lblframe_tree_listven.grid(row=2, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        columnas=("codigo","cantidad", "descripcion", "precio pesos", "fecha")
+        
+        self.tree_lista_ventas= tb.Treeview(self.lblframe_tree_listven, columns=columnas,
+                                          height=17,show='headings',bootstyle='dark')
+        self.tree_lista_ventas.grid(row=0, column=0)
+        
+        self.tree_lista_ventas.heading("codigo", text="Codigo", anchor=W)
+        self.tree_lista_ventas.heading("cantidad", text="Cantidad", anchor=W)
+        self.tree_lista_ventas.heading("descripcion", text="Descripcion", anchor=W)
+        self.tree_lista_ventas.heading("precio pesos", text="Precio Pesos", anchor=W)
+        self.tree_lista_ventas.heading("fecha", text="Fecha", anchor=W)
+        #self.tree_lista_productos['displaycolumns']=("codigo","descripcion","precio pesos","precio dolar")#para ocultar la clave solo apareceran codigo nombre y rol# sirve para ocultar toda la ventana 
+        
+        #Crear el scrolbar
+        tree_scroll_listven=tb.Scrollbar(self.frame_lista_ventas, bootstyle='round-success')
+        tree_scroll_listven.grid(row=2, column=1)
+        #Configurar el scrolbar
+        tree_scroll_listven.config(command=self.tree_lista_ventas.yview)
+        
+        self.mostrar_ventas()
+              
+    def mostrar_ventas(self): # con esta funcion se llama a la BD y se muestra los datos contenidos en ella  es utilizada al final de la funcion que implenta cada boton
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            registros=self.tree_lista_ventas.get_children()
+            for elementos in registros:
+                self.tree_lista_ventas.delete(elementos)
+            miCursor.execute("SELECT * FROM Ventas") 
+            datos=miCursor.fetchall()   
+            for row in datos:
+                self.tree_lista_ventas.insert("",0,text=row[0],values=(row[0],row[1],row[2],row[3]))
+            miConexion.commit()
+            miConexion.close()   
+             
+        except: 
+              messagebox.showerror("Lista de Ventas","Ocurrio un error al mostrar la lista de ventas")            
         
         
+ 
         
         
 def main(): 
