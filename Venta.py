@@ -497,9 +497,66 @@ class Ventana(tb.Window):
         except: 
               messagebox.showerror("Lista de Ventas","Ocurrio un error al mostrar la lista de ventas")            
         
+    def ventana_nueva_venta(self):
         
+        self.frame_nueva_venta=Toplevel(self)
+        self.frame_nueva_venta.title('Nueva Venta')
+        self.frame_nueva_venta.geometry('600x600')
+        self.frame_nueva_venta.resizable(0,0)
+        self.frame_nueva_venta.grab_set()
+        
+        lblframe_nueva_venta=LabelFrame(self.frame_nueva_venta)
+        lblframe_nueva_venta.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
+        
+        lbl_codigo_nueva_venta=Label(lblframe_nueva_venta, text='Codigo')
+        lbl_codigo_nueva_venta.grid(row=0, column=0, padx=10,pady=10) 
+        self.txt_codigo_nueva_venta=Entry(lblframe_nueva_venta, width=40)
+        self.txt_codigo_nueva_venta.grid(row=0, column=1, padx=10,pady=10)
+        
+        lbl_cantidad_nueva_venta=Label(lblframe_nueva_venta, text='Cantidad')
+        lbl_cantidad_nueva_venta.grid(row=1, column=0, padx=10,pady=10) 
+        self.txt_cantidad_nueva_venta=Entry(lblframe_nueva_venta, width=40)
+        self.txt_cantidad_nueva_venta.grid(row=1, column=1, padx=10,pady=10)
+        
+        lbl_descripcion_nueva_venta=Label(lblframe_nueva_venta, text='Descripcion')
+        lbl_descripcion_nueva_venta.grid(row=2, column=0, padx=10,pady=10) 
+        self.txt_descripcion_nueva_venta=Entry(lblframe_nueva_venta, width=40)
+        self.txt_descripcion_nueva_venta.grid(row=2, column=1, padx=10,pady=10)
+        
+        lbl_precio_pesos_nueva_venta=Label(lblframe_nueva_venta, text='Precio pesos')
+        lbl_precio_pesos_nueva_venta.grid(row=3, column=0, padx=10,pady=10) 
+        self.txt_precio_pesos_nueva_venta=Entry(lblframe_nueva_venta, width=40)
+        self.txt_precio_pesos_nueva_venta.grid(row=3, column=1, padx=10,pady=10)
+        
+        lbl_fecha_nueva_venta=Label(lblframe_nueva_venta, text='Fecha')
+        lbl_fecha_nueva_venta.grid(row=2, column=0, padx=10,pady=10) 
+        self.txt_fecha_nueva_venta=Entry(lblframe_nueva_venta, width=40)
+        self.txt_fecha_nueva_venta.grid(row=2, column=1, padx=10,pady=10)
+        
+        btn_guardar_nueva_venta=ttk.Button(lblframe_nueva_venta, text='Guardar',width=38,command=self.guardar_venta)
+        btn_guardar_nueva_venta.grid(row=4,column=1,padx=10,pady=10)   
+        
+        #LLAMADA A LA FUNCION ULTIMO_PRODUCTO HAY QUE IMPLEMENTAR    
  
+    def guardar_venta(self): 
+        if self.txt_codigo_nueva_venta.get()=="" or self.txt_cantidad_nueva_venta.get()=="" or self.txt_descripcion_nueva_venta.get()=="" or self.txt_precio_pesos_nueva_venta.get()=="" or self.txt_fecha_nueva_venta.get()=="":
+            
+            messagebox.showwarning('Guardando ventas',"Algun campo no es valido por favor revise")  
+            return    
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            datos_guardar_venta=(self.txt_codigo_nueva_venta.get(), self.txt_cantidad_nueva_venta.get(),self.txt_descripcion_nueva_venta.get(),self.txt_precio_pesos_nueva_venta.get(),self.txt_fecha_nueva_venta.get()) #se guarda como una tupla
+            miCursor.execute("INSERT INTO Productos VALUES(?,?,?,?,?)",datos_guardar_venta) 
+            messagebox.showinfo('Guardando Venta', "Venta Guardada Correctamente")
+            miConexion.commit()
+            self.frame_nueva_venta.destroy() #cierra la ventana
+            self.ventana_lista_ventas()#cargamos la ventana para ver los cambios
+            miConexion.close()   
+             
         
+        except sqlite3.Error as e:
+            messagebox.showerror("Guardando Venta", f"Ocurrió un error al guardar venta: {str(e)}")     
         
 def main(): 
     app=Ventana()
