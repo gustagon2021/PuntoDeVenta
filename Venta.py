@@ -256,6 +256,42 @@ class Ventana(tb.Window):
         except: 
               messagebox.showerror("Busqueda de usuario","Ocurrio un error al buscar en la lista de usuarios") 
     
+    def ventana_modificar_usuario(self):
+        
+        self.frame_modificar_usuario=Toplevel(self)
+        self.frame_modificar_usuario.title('Nuevo Usuario')
+        self.frame_modificar_usuario.geometry('600x600')
+        self.frame_modificar_usuario.resizable(0,0)
+        self.frame_modificar_usuario.grab_set() #para que no se permita hacer nada mientras la ventana esta abierta
+        
+        lblframe_modificar_usuario=LabelFrame(self.frame_nuevo_usuario)
+        lblframe_modificar_usuario.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
+        
+        lbl_codigo_modificar_usuario=Label(lblframe_nuevo_usuario, text='Codigo')
+        lbl_codigo_modificar_usuario.grid(row=0, column=0, padx=10,pady=10) 
+        self.txt_codigo_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_codigo_modificar_usuario.grid(row=0, column=1, padx=10,pady=10)
+        
+        lbl_nombre_modificar_usuario=Label(lblframe_nuevo_usuario, text='Nombre')
+        lbl_nombre_modificar_usuario.grid(row=1, column=0, padx=10,pady=10) 
+        self.txt_nombre_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_nombre_modificar_usuario.grid(row=1, column=1, padx=10,pady=10)
+        
+        lbl_clave_modificar_usuario=Label(lblframe_nuevo_usuario, text='Clave')
+        lbl_clave_modificar_usuario.grid(row=2, column=0, padx=10,pady=10) 
+        self.txt_clave_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_clave_modificar_usuario.grid(row=2, column=1, padx=10,pady=10)
+        
+        lbl_rol_modificar_usuario=Label(lblframe_modificar_usuario, text='Rol')
+        lbl_rol_modificar_usuario.grid(row=3, column=0, padx=10,pady=10) 
+        self.txt_rol_modificar_usuario=ttk.Combobox(lblframe_modificar_usuario,values=('Administrador','Bodega','Vendedor'), width=38, state='readonly')
+        self.txt_rol_modificar_usuario.grid(row=3, column=1, padx=10,pady=10)
+        
+        
+        btn_guardar_modificar_usuario=ttk.Button(lblframe_modificar_usuario, text='Modificar',width=38,command=self.modificar_usuario)
+        btn_guardar_modificar_usuario.grid(row=4,column=1,padx=10,pady=10)   
+        
+        #self.ultimo_usuario()
     
     #====================================PRODUCTOS==================================#         
     def ventana_lista_productos(self): #ventana madre sobre la cual edificar el resto de los botones 
@@ -265,7 +301,7 @@ class Ventana(tb.Window):
         self.lblframe_botones_listpro=LabelFrame(self.frame_lista_productos)
         self.lblframe_botones_listpro.grid(row=0, column=0,padx=10,pady=10,sticky=NSEW)
         
-        btn_nuevo_producto= tb.Button(self.lblframe_botones_listpro, text='Nuevo', width=15,bootstyle="success")
+        btn_nuevo_producto= tb.Button(self.lblframe_botones_listpro, text='Nuevo', width=15,bootstyle="success",command=self.ventana_nuevo_producto)
         btn_nuevo_producto.grid(row=0,column=0, padx=5,pady=5)
         btn_modificar_producto= tb.Button(self.lblframe_botones_listpro, text='Modificar', width=15,bootstyle="warning")
         btn_modificar_producto.grid(row=0,column=1, padx=5,pady=5)
@@ -275,15 +311,16 @@ class Ventana(tb.Window):
         self.lblframe_busqueda_listpro=LabelFrame(self.frame_lista_productos)
         self.lblframe_busqueda_listpro.grid(row=1, column=0,padx=10,pady=10,sticky=NSEW)
         
-        txt_busqueda_producto=ttk.Entry(self.lblframe_busqueda_listpro, width=95)
-        txt_busqueda_producto.grid(row=0,column=0,padx=5,pady=5)
+        self.txt_busqueda_producto=ttk.Entry(self.lblframe_busqueda_listpro, width=95)
+        self.txt_busqueda_producto.grid(row=0,column=0,padx=5,pady=5)
+        self.txt_busqueda_producto.bind('<Key>', self.buscar_producto)
         
         #=====================Treeview===================
         
         self.lblframe_tree_listpro=LabelFrame(self.frame_lista_productos)
         self.lblframe_tree_listpro.grid(row=2, column=0,padx=10,pady=10,sticky=NSEW)
         
-        columnas=("codigo", "descripcion", "precio pesos", "precio dolar")
+        columnas=("codigo", "descripcion", "precio_pesos", "precio_dolar")
         
         self.tree_lista_productos= tb.Treeview(self.lblframe_tree_listpro, columns=columnas,
                                           height=17,show='headings',bootstyle='dark')
@@ -291,8 +328,8 @@ class Ventana(tb.Window):
         
         self.tree_lista_productos.heading("codigo", text="Codigo", anchor=W)
         self.tree_lista_productos.heading("descripcion", text="Descripcion", anchor=W)
-        self.tree_lista_productos.heading("precio pesos", text="Precio Pesos", anchor=W)
-        self.tree_lista_productos.heading("precio dolar", text="Precio dolar", anchor=W)
+        self.tree_lista_productos.heading("precio_pesos", text="Precio Pesos", anchor=W)
+        self.tree_lista_productos.heading("precio_dolar", text="Precio dolar", anchor=W)
         #self.tree_lista_productos['displaycolumns']=("codigo","descripcion","precio pesos","precio dolar")#para ocultar la clave solo apareceran codigo nombre y rol# sirve para ocultar toda la ventana 
         
         #Crear el scrolbar
@@ -318,8 +355,84 @@ class Ventana(tb.Window):
             miConexion.close()   
              
         except: 
-              messagebox.showerror("Lista de Producto","Ocurrio un error al mostrar la lista de productos")            
+              messagebox.showerror("Lista de Producto","Ocurrio un error al mostrar la lista de productos")
+    
+    def ventana_nuevo_producto(self):
         
+        self.frame_nuevo_producto=Toplevel(self)
+        self.frame_nuevo_producto.title('Nuevo Producto')
+        self.frame_nuevo_producto.geometry('600x600')
+        self.frame_nuevo_producto.resizable(0,0)
+        self.frame_nuevo_producto.grab_set()
+        
+        lblframe_nuevo_producto=LabelFrame(self.frame_nuevo_producto)
+        lblframe_nuevo_producto.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
+        
+        lbl_codigo_nuevo_producto=Label(lblframe_nuevo_producto, text='Codigo')
+        lbl_codigo_nuevo_producto.grid(row=0, column=0, padx=10,pady=10) 
+        self.txt_codigo_nuevo_producto=Entry(lblframe_nuevo_producto, width=40)
+        self.txt_codigo_nuevo_producto.grid(row=0, column=1, padx=10,pady=10)
+        
+        lbl_descripcion_nuevo_producto=Label(lblframe_nuevo_producto, text='Descripcion')
+        lbl_descripcion_nuevo_producto.grid(row=1, column=0, padx=10,pady=10) 
+        self.txt_descripcion_nuevo_producto=Entry(lblframe_nuevo_producto, width=40)
+        self.txt_descripcion_nuevo_producto.grid(row=1, column=1, padx=10,pady=10)
+        
+        lbl_precio_pesos_nuevo_producto=Label(lblframe_nuevo_producto, text='Precio pesos')
+        lbl_precio_pesos_nuevo_producto.grid(row=2, column=0, padx=10,pady=10) 
+        self.txt_precio_pesos_nuevo_producto=Entry(lblframe_nuevo_producto, width=40)
+        self.txt_precio_pesos_nuevo_producto.grid(row=2, column=1, padx=10,pady=10)
+        
+        lbl_precio_dolar_nuevo_producto=Label(lblframe_nuevo_producto, text='Precio dolar')
+        lbl_precio_dolar_nuevo_producto.grid(row=3, column=0, padx=10,pady=10) 
+        self.txt_precio_dolar_nuevo_producto=Entry(lblframe_nuevo_producto, width=40)
+        self.txt_precio_dolar_nuevo_producto.grid(row=3, column=1, padx=10,pady=10)
+        
+        
+        btn_guardar_nuevo_producto=ttk.Button(lblframe_nuevo_producto, text='Guardar',width=38,command=self.guardar_producto)
+        btn_guardar_nuevo_producto.grid(row=4,column=1,padx=10,pady=10)   
+        
+        #LLAMADA A LA FUNCION ULTIMO_PRODUCTO HAY QUE IMPLEMENTAR
+        
+    def guardar_producto(self): 
+        if self.txt_codigo_nuevo_producto.get()=="" or self.txt_descripcion_nuevo_producto.get()=="" or self.txt_precio_pesos_nuevo_producto.get()=="" or self.txt_precio_dolar_nuevo_producto.get()=="":
+            
+            messagebox.showwarning('Guardando usuarios',"Algun campo no es valido por favor revise")  
+            return    
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            datos_guardar_producto=(self.txt_codigo_nuevo_producto.get(),self.txt_descripcion_nuevo_producto.get(),
+            self.txt_precio_pesos_nuevo_producto.get(),self.txt_precio_dolar_nuevo_producto.get()) #se guarda como una tupla
+            miCursor.execute("INSERT INTO Productos VALUES(?,?,?,?)",datos_guardar_producto) 
+            messagebox.showinfo('Guardando Producto', "Producto Guardado Correctamente")
+            miConexion.commit()
+            self.frame_nuevo_producto.destroy() #cierra la ventana
+            self.ventana_lista_productos()#cargamos la ventana para ver los cambios
+            miConexion.close()   
+             
+        
+        except sqlite3.Error as e:
+            messagebox.showerror("Guardando Producto", f"Ocurrió un error al guardar usuarios: {str(e)}") 
+                              
+    def buscar_producto(self,event): #FUNCION PARA BUSCAR PRODUCTOS
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            registros=self.tree_lista_productos.get_children()
+            for elementos in registros:
+                self.tree_lista_productos.delete(elementos)
+            miCursor.execute("SELECT * FROM Productos WHERE Descripcion LIKE ?",(self.txt_busqueda_producto.get()
+                                                                           +'%',)) 
+            datos=miCursor.fetchall()   
+            for row in datos:
+                self.tree_lista_productos.insert("",0,text=row[0],values=(row[0],row[1],row[2],row[3]))
+            miConexion.commit()
+            miConexion.close()   
+             
+        except: 
+              messagebox.showerror("Busqueda de producto","Ocurrio un error al buscar en la lista de productos")
+              
     #=================================VENTAS=================================#
     def ventana_lista_ventas(self): #ventana madre sobre la cual edificar el resto de los botones 
         self.frame_lista_ventas= Frame(self.frame_center)
@@ -346,7 +459,7 @@ class Ventana(tb.Window):
         self.lblframe_tree_listven=LabelFrame(self.frame_lista_ventas)
         self.lblframe_tree_listven.grid(row=2, column=0,padx=10,pady=10,sticky=NSEW)
         
-        columnas=("codigo","cantidad", "descripcion", "precio pesos", "fecha")
+        columnas=("codigo","cantidad", "descripcion", "precio_pesos", "fecha")
         
         self.tree_lista_ventas= tb.Treeview(self.lblframe_tree_listven, columns=columnas,
                                           height=17,show='headings',bootstyle='dark')
@@ -355,7 +468,7 @@ class Ventana(tb.Window):
         self.tree_lista_ventas.heading("codigo", text="Codigo", anchor=W)
         self.tree_lista_ventas.heading("cantidad", text="Cantidad", anchor=W)
         self.tree_lista_ventas.heading("descripcion", text="Descripcion", anchor=W)
-        self.tree_lista_ventas.heading("precio pesos", text="Precio Pesos", anchor=W)
+        self.tree_lista_ventas.heading("precio_pesos", text="Precio Pesos", anchor=W)
         self.tree_lista_ventas.heading("fecha", text="Fecha", anchor=W)
         #self.tree_lista_productos['displaycolumns']=("codigo","descripcion","precio pesos","precio dolar")#para ocultar la clave solo apareceran codigo nombre y rol# sirve para ocultar toda la ventana 
         
