@@ -303,8 +303,10 @@ class Ventana(tb.Window):
         
         btn_nuevo_producto= tb.Button(self.lblframe_botones_listpro, text='Nuevo', width=15,bootstyle="success",command=self.ventana_nuevo_producto)
         btn_nuevo_producto.grid(row=0,column=0, padx=5,pady=5)
-        btn_modificar_producto= tb.Button(self.lblframe_botones_listpro, text='Modificar', width=15,bootstyle="warning")
+        
+        btn_modificar_producto= tb.Button(self.lblframe_botones_listpro, text='Modificar', width=15,bootstyle="warning",command=self.ventana_modificar_usuario)
         btn_modificar_producto.grid(row=0,column=1, padx=5,pady=5)
+        
         btn_eliminar_producto= tb.Button(self.lblframe_botones_listpro, text='Eliminar', width=15,bootstyle="danger")
         btn_eliminar_producto.grid(row=0,column=2, padx=5,pady=5)   
         
@@ -432,6 +434,43 @@ class Ventana(tb.Window):
              
         except: 
               messagebox.showerror("Busqueda de producto","Ocurrio un error al buscar en la lista de productos")
+    
+    def ventana_modificar_producto(self):
+        
+        self.frame_modificar_producto=Toplevel(master=self)
+        self.frame_modificar_producto.title('Modificar Producto')
+        #self.frame_modificar_producto.geometry('400x450')
+        #self.frame_modificar_producto.resizable(0,0)
+        self.frame_modificar_producto.grab_set()
+        
+        lblframe_modificar_producto=tb.LabelFrame(master=self.frame_modificar_producto,text='Modificar Producto')
+        lblframe_modificar_producto.pack(padx=15,pady=15)
+        
+        lbl_codigo_modificar_producto=Label(lblframe_modificar_producto, text='Codigo')
+        lbl_codigo_modificar_producto.grid(row=0, column=0, padx=10,pady=10) 
+        self.txt_codigo_modificar_producto=Entry(lblframe_modificar_producto, width=40)
+        self.txt_codigo_modificar_producto.grid(row=0, column=1, padx=10,pady=10)
+        
+        lbl_descripcion_modificar_producto=Label(lblframe_modificar_producto, text='Descripcion')
+        lbl_descripcion_modificar_producto.grid(row=1, column=0, padx=10,pady=10) 
+        self.txt_descripcion_modificar_producto=Entry(lblframe_modificar_producto, width=40)
+        self.txt_descripcion_modificar_producto.grid(row=1, column=1, padx=10,pady=10)
+        
+        lbl_precio_pesos_modificar_producto=Label(lblframe_modificar_producto, text='Precio pesos')
+        lbl_precio_pesos_modificar_producto.grid(row=2, column=0, padx=10,pady=10) 
+        self.txt_precio_pesos_modificar_producto=Entry(lblframe_modificar_producto, width=40)
+        self.txt_precio_pesos_modificar_producto.grid(row=2, column=1, padx=10,pady=10)
+        
+        lbl_precio_dolar_modificar_producto=Label(lblframe_modificar_producto, text='Precio dolar')
+        lbl_precio_dolar_modificar_producto.grid(row=3, column=0, padx=10,pady=10) 
+        self.txt_precio_dolar_modificar_producto=Entry(lblframe_modificar_producto, width=40)
+        self.txt_precio_dolar_modificar_producto.grid(row=3, column=1, padx=10,pady=10)
+        
+        
+        btn_modificar_producto=tb.Button(master=lblframe_modificar_producto, text='Modificar', width=38, bootstyle='success')
+        btn_modificar_producto.grid(row=7,column=1,padx=10,pady=10)
+        self.ent_nombre_modificar_producto.focus()   
+        
               
     #=================================VENTAS=================================#
     def ventana_lista_ventas(self): #ventana madre sobre la cual edificar el resto de los botones 
