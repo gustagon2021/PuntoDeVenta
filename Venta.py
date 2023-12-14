@@ -41,7 +41,7 @@ class Ventana(tb.Window):
         btn_ventas.grid(row=1,column=0,padx=10,pady=10)
         btn_clientes=ttk.Button(self.frame_left,text='Clientes',width=15)
         btn_clientes.grid(row=2,column=0,padx=10,pady=10)
-        btn_compras=ttk.Button(self.frame_left,text='Compras',width=15)
+        btn_compras=ttk.Button(self.frame_left,text='Compras',width=15,command= self.ventana_lista_compras)
         btn_compras.grid(row=3,column=0,padx=10,pady=10)
         btn_usuarios=ttk.Button(self.frame_left,text='Usuarios',width=15,command=self.ventana_lista_usuarios)
         btn_usuarios.grid(row=4,column=0,padx=10,pady=10)
@@ -267,19 +267,19 @@ class Ventana(tb.Window):
         lblframe_modificar_usuario=LabelFrame(self.frame_nuevo_usuario)
         lblframe_modificar_usuario.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
         
-        lbl_codigo_modificar_usuario=Label(lblframe_nuevo_usuario, text='Codigo')
+        lbl_codigo_modificar_usuario=Label(lblframe_modificar_usuario, text='Codigo')
         lbl_codigo_modificar_usuario.grid(row=0, column=0, padx=10,pady=10) 
-        self.txt_codigo_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_codigo_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
         self.txt_codigo_modificar_usuario.grid(row=0, column=1, padx=10,pady=10)
         
-        lbl_nombre_modificar_usuario=Label(lblframe_nuevo_usuario, text='Nombre')
+        lbl_nombre_modificar_usuario=Label(lblframe_modificar_usuario, text='Nombre')
         lbl_nombre_modificar_usuario.grid(row=1, column=0, padx=10,pady=10) 
-        self.txt_nombre_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_nombre_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
         self.txt_nombre_modificar_usuario.grid(row=1, column=1, padx=10,pady=10)
         
-        lbl_clave_modificar_usuario=Label(lblframe_nuevo_usuario, text='Clave')
+        lbl_clave_modificar_usuario=Label(lblframe_modificar_usuario, text='Clave')
         lbl_clave_modificar_usuario.grid(row=2, column=0, padx=10,pady=10) 
-        self.txt_clave_modificar_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_clave_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
         self.txt_clave_modificar_usuario.grid(row=2, column=1, padx=10,pady=10)
         
         lbl_rol_modificar_usuario=Label(lblframe_modificar_usuario, text='Rol')
@@ -441,7 +441,7 @@ class Ventana(tb.Window):
         self.lblframe_botones_listven=LabelFrame(self.frame_lista_ventas)
         self.lblframe_botones_listven.grid(row=0, column=0,padx=10,pady=10,sticky=NSEW)
         
-        btn_nuevo_venta= tb.Button(self.lblframe_botones_listven, text='Nuevo', width=15,bootstyle="success")
+        btn_nuevo_venta= tb.Button(self.lblframe_botones_listven, text='Nuevo', width=15,bootstyle="success",command=self.ventana_nueva_venta)
         btn_nuevo_venta.grid(row=0,column=0, padx=5,pady=5)
         btn_modificar_venta= tb.Button(self.lblframe_botones_listven, text='Modificar', width=15,bootstyle="warning")
         btn_modificar_venta.grid(row=0,column=1, padx=5,pady=5)
@@ -529,12 +529,12 @@ class Ventana(tb.Window):
         self.txt_precio_pesos_nueva_venta.grid(row=3, column=1, padx=10,pady=10)
         
         lbl_fecha_nueva_venta=Label(lblframe_nueva_venta, text='Fecha')
-        lbl_fecha_nueva_venta.grid(row=2, column=0, padx=10,pady=10) 
+        lbl_fecha_nueva_venta.grid(row=4, column=0, padx=10,pady=10) 
         self.txt_fecha_nueva_venta=Entry(lblframe_nueva_venta, width=40)
-        self.txt_fecha_nueva_venta.grid(row=2, column=1, padx=10,pady=10)
+        self.txt_fecha_nueva_venta.grid(row=4, column=1, padx=10,pady=10)
         
         btn_guardar_nueva_venta=ttk.Button(lblframe_nueva_venta, text='Guardar',width=38,command=self.guardar_venta)
-        btn_guardar_nueva_venta.grid(row=4,column=1,padx=10,pady=10)   
+        btn_guardar_nueva_venta.grid(row=5,column=1,padx=10,pady=10)   
         
         #LLAMADA A LA FUNCION ULTIMO_PRODUCTO HAY QUE IMPLEMENTAR    
  
@@ -547,7 +547,7 @@ class Ventana(tb.Window):
             miConexion=sqlite3.connect('Ventas.db')
             miCursor= miConexion.cursor()
             datos_guardar_venta=(self.txt_codigo_nueva_venta.get(), self.txt_cantidad_nueva_venta.get(),self.txt_descripcion_nueva_venta.get(),self.txt_precio_pesos_nueva_venta.get(),self.txt_fecha_nueva_venta.get()) #se guarda como una tupla
-            miCursor.execute("INSERT INTO Productos VALUES(?,?,?,?,?)",datos_guardar_venta) 
+            miCursor.execute("INSERT INTO Ventas VALUES(?,?,?,?,?)",datos_guardar_venta) 
             messagebox.showinfo('Guardando Venta', "Venta Guardada Correctamente")
             miConexion.commit()
             self.frame_nueva_venta.destroy() #cierra la ventana
@@ -557,6 +557,72 @@ class Ventana(tb.Window):
         
         except sqlite3.Error as e:
             messagebox.showerror("Guardando Venta", f"Ocurrió un error al guardar venta: {str(e)}")     
+
+#========================================COMPRAS======================================#
+    def ventana_lista_compras(self): #ventana madre sobre la cual edificar el resto de los botones 
+        self.frame_lista_compras= Frame(self.frame_center)
+        self.frame_lista_compras.grid(row=0, column=0,columnspan=2,sticky=NSEW)
+        
+        self.lblframe_botones_listcom=LabelFrame(self.frame_lista_compras)
+        self.lblframe_botones_listcom.grid(row=0, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        btn_nueva_compra= tb.Button(self.lblframe_botones_listcom, text='Nuevo', width=15,bootstyle="success")
+        btn_nueva_compra.grid(row=0,column=0, padx=5,pady=5)
+        btn_modificar_compra= tb.Button(self.lblframe_botones_listcom, text='Modificar', width=15,bootstyle="warning")
+        btn_modificar_compra.grid(row=0,column=1, padx=5,pady=5)
+        btn_eliminar_compra= tb.Button(self.lblframe_botones_listcom, text='Eliminar', width=15,bootstyle="danger")
+        btn_eliminar_compra.grid(row=0,column=2, padx=5,pady=5)   
+        
+        self.lblframe_busqueda_listcom=LabelFrame(self.frame_lista_compras)
+        self.lblframe_busqueda_listcom.grid(row=1, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        txt_busqueda_compra=ttk.Entry(self.lblframe_busqueda_listcom, width=95)
+        txt_busqueda_compra.grid(row=0,column=0,padx=5,pady=5)
+        
+        #=====================Treeview===================
+        
+        self.lblframe_tree_listcom=LabelFrame(self.frame_lista_compras)
+        self.lblframe_tree_listcom.grid(row=2, column=0,padx=10,pady=10,sticky=NSEW)
+        
+        columnas=("codigo","cantidad", "descripcion", "precio_pesos","precio dolar", "fecha")
+        
+        self.tree_lista_compras= tb.Treeview(self.lblframe_tree_listcom, columns=columnas,
+                                          height=17,show='headings',bootstyle='dark')
+        self.tree_lista_compras.grid(row=0, column=0)
+        
+        self.tree_lista_compras.heading("codigo", text="Codigo", anchor=W)
+        self.tree_lista_compras.heading("cantidad", text="Cantidad", anchor=W)
+        self.tree_lista_compras.heading("descripcion", text="Descripcion", anchor=W)
+        self.tree_lista_compras.heading("precio_pesos", text="Precio Pesos", anchor=W)
+        self.tree_lista_compras.heading("precio_dolar", text="Precio Dolar", anchor=W)
+        self.tree_lista_compras.heading("fecha", text="Fecha", anchor=W)
+        #self.tree_lista_productos['displaycolumns']=("codigo","descripcion","precio pesos","precio dolar")#para ocultar la clave solo apareceran codigo nombre y rol# sirve para ocultar toda la ventana 
+        
+        #Crear el scrolbar
+        tree_scroll_listcom=tb.Scrollbar(self.frame_lista_compras, bootstyle='round-success')
+        tree_scroll_listcom.grid(row=2, column=1)
+        #Configurar el scrolbar
+        tree_scroll_listcom.config(command=self.tree_lista_compras.yview)
+        
+        self.mostrar_compras()
+        
+    def mostrar_compras(self): # con esta funcion se llama a la BD y se muestra los datos contenidos en ella  es utilizada al final de la funcion que implenta cada boton
+        try:
+            miConexion=sqlite3.connect('Ventas.db')
+            miCursor= miConexion.cursor()
+            registros=self.tree_lista_compras.get_children()
+            for elementos in registros:
+                self.tree_lista_compras.delete(elementos)
+            miCursor.execute("SELECT * FROM Compras") 
+            datos=miCursor.fetchall()   
+            for row in datos:
+                self.tree_lista_compras.insert("",0,text=row[0],values=(row[0],row[1],row[2],row[3],row[4],row[5]))
+            miConexion.commit()
+            miConexion.close()   
+             
+        except: 
+              messagebox.showerror("Lista de Compras","Ocurrio un error al mostrar la lista de compras")            
+    
         
 def main(): 
     app=Ventana()
