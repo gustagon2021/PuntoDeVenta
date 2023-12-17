@@ -98,7 +98,7 @@ class Ventana(tb.Window):
         
         btn_nuevo_usuario= tb.Button(self.lblframe_botones_listusu, text='Nuevo', width=15,bootstyle="success",command=self.ventana_nuevo_usuario)
         btn_nuevo_usuario.grid(row=0,column=0, padx=5,pady=5)
-        btn_modificar_usuario= tb.Button(self.lblframe_botones_listusu, text='Modificar', width=15,bootstyle="warning")
+        btn_modificar_usuario= tb.Button(self.lblframe_botones_listusu, text='Modificar', width=15,bootstyle="warning", command=self.ventana_modificar_usuario)
         btn_modificar_usuario.grid(row=0,column=1, padx=5,pady=5)
         btn_eliminar_usuario= tb.Button(self.lblframe_botones_listusu, text='Eliminar', width=15,bootstyle="danger")
         btn_eliminar_usuario.grid(row=0,column=2, padx=5,pady=5)   
@@ -258,41 +258,84 @@ class Ventana(tb.Window):
     
     def ventana_modificar_usuario(self):
         
-        self.frame_modificar_usuario=Toplevel(self)
-        self.frame_modificar_usuario.title('Nuevo Usuario')
-        self.frame_modificar_usuario.geometry('600x600')
-        self.frame_modificar_usuario.resizable(0,0)
-        self.frame_modificar_usuario.grab_set() #para que no se permita hacer nada mientras la ventana esta abierta
+        self.usuario_seleccionado=self.tree_lista_usuarios.focus()
         
-        lblframe_modificar_usuario=LabelFrame(self.frame_nuevo_usuario)
-        lblframe_modificar_usuario.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
+        self.val_mod_usu= self.tree_lista_usuarios.item(self.usuario_seleccionado,'values')
         
-        lbl_codigo_modificar_usuario=Label(lblframe_modificar_usuario, text='Codigo')
-        lbl_codigo_modificar_usuario.grid(row=0, column=0, padx=10,pady=10) 
-        self.txt_codigo_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
-        self.txt_codigo_modificar_usuario.grid(row=0, column=1, padx=10,pady=10)
+        if self.val_mod_usu!='':
+          self.frame_modificar_usuario=Toplevel(self)
+          self.frame_modificar_usuario.title('Modificar Usuario')
+          self.frame_modificar_usuario.geometry('600x600')
+          self.frame_modificar_usuario.resizable(0,0)
+          self.frame_modificar_usuario.grab_set() #para que no se permita hacer nada mientras la ventana esta abierta
         
-        lbl_nombre_modificar_usuario=Label(lblframe_modificar_usuario, text='Nombre')
-        lbl_nombre_modificar_usuario.grid(row=1, column=0, padx=10,pady=10) 
-        self.txt_nombre_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
-        self.txt_nombre_modificar_usuario.grid(row=1, column=1, padx=10,pady=10)
+          lblframe_modificar_usuario=LabelFrame(self.frame_modificar_usuario)
+          lblframe_modificar_usuario.grid(row=0,column=0,sticky=NSEW,padx=10,pady=10)
         
-        lbl_clave_modificar_usuario=Label(lblframe_modificar_usuario, text='Clave')
-        lbl_clave_modificar_usuario.grid(row=2, column=0, padx=10,pady=10) 
-        self.txt_clave_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
-        self.txt_clave_modificar_usuario.grid(row=2, column=1, padx=10,pady=10)
+          lbl_codigo_modificar_usuario=Label(lblframe_modificar_usuario, text='Codigo')
+          lbl_codigo_modificar_usuario.grid(row=0, column=0, padx=10,pady=10) 
+          self.txt_codigo_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
+          self.txt_codigo_modificar_usuario.grid(row=0, column=1, padx=10,pady=10)
         
-        lbl_rol_modificar_usuario=Label(lblframe_modificar_usuario, text='Rol')
-        lbl_rol_modificar_usuario.grid(row=3, column=0, padx=10,pady=10) 
-        self.txt_rol_modificar_usuario=ttk.Combobox(lblframe_modificar_usuario,values=('Administrador','Bodega','Vendedor'), width=38, state='readonly')
-        self.txt_rol_modificar_usuario.grid(row=3, column=1, padx=10,pady=10)
+          lbl_nombre_modificar_usuario=Label(lblframe_modificar_usuario, text='Nombre')
+          lbl_nombre_modificar_usuario.grid(row=1, column=0, padx=10,pady=10) 
+          self.txt_nombre_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
+          self.txt_nombre_modificar_usuario.grid(row=1, column=1, padx=10,pady=10)
+        
+          lbl_clave_modificar_usuario=Label(lblframe_modificar_usuario, text='Clave')
+          lbl_clave_modificar_usuario.grid(row=2, column=0, padx=10,pady=10) 
+          self.txt_clave_modificar_usuario=Entry(lblframe_modificar_usuario, width=40)
+          self.txt_clave_modificar_usuario.grid(row=2, column=1, padx=10,pady=10)
+        
+          lbl_rol_modificar_usuario=Label(lblframe_modificar_usuario, text='Rol')
+          lbl_rol_modificar_usuario.grid(row=3, column=0, padx=10,pady=10) 
+          self.txt_rol_modificar_usuario=ttk.Combobox(lblframe_modificar_usuario,values=('Administrador','Bodega','Vendedor'), width=38)
+          self.txt_rol_modificar_usuario.grid(row=3, column=1, padx=10,pady=10)
         
         
-        btn_guardar_modificar_usuario=ttk.Button(lblframe_modificar_usuario, text='Modificar',width=38,command=self.modificar_usuario)
-        btn_guardar_modificar_usuario.grid(row=4,column=1,padx=10,pady=10)   
+          btn_guardar_modificar_usuario=ttk.Button(lblframe_modificar_usuario, text='Modificar',width=38,bootstyle='warning',command=self.modificar_usuario)
+          btn_guardar_modificar_usuario.grid(row=4,column=1,padx=10,pady=10)  
+          self.llenar_entrys_modificar_usuario()
+          self.txt_nombre_modificar_usuario.focus()   
+        
+        
         
         #self.ultimo_usuario()
     
+    def llenar_entrys_modificar_usuario(self):
+        self.txt_codigo_modificar_usuario.delete(0,END) 
+        self.txt_nombre_modificar_usuario.delete(0,END)
+        self.txt_clave_modificar_usuario.delete(0,END)
+        self.txt_rol_modificar_usuario.delete(0,END)
+        
+        self.txt_codigo_modificar_usuario.insert(0,self.val_mod_usu[0]) 
+        self.txt_codigo_modificar_usuario.config(state='readonly')
+        self.txt_nombre_modificar_usuario.insert(0,self.val_mod_usu[1])
+        self.txt_clave_modificar_usuario.insert(0,self.val_mod_usu[2])
+        self.txt_rol_modificar_usuario.insert(0,self.val_mod_usu[3])
+        self.txt_rol_modificar_usuario.config(state='readonly')
+    
+    def modificar_usuario(self):
+      if self.txt_codigo_modificar_usuario.get() == "" or self.txt_nombre_modificar_usuario.get() == "" or self.txt_clave_modificar_usuario.get() == "":
+        messagebox.showwarning('Modificar usuarios', "Algun campo no es valido por favor revise")
+        return
+
+      try:
+        miConexion = sqlite3.connect('Ventas.db')
+        miCursor = miConexion.cursor()
+
+        datos_modificar_usuario = (self.txt_nombre_modificar_usuario.get(), self.txt_clave_modificar_usuario.get(), self.txt_rol_modificar_usuario.get())
+
+        miCursor.execute("UPDATE Usuarios SET Nombre=?, Clave=?, Rol=? WHERE Codigo=?", datos_modificar_usuario + (self.txt_codigo_modificar_usuario.get(),))
+
+        messagebox.showinfo('Modificar Usuarios', "Usuario Modificado Correctamente")
+        miConexion.commit()
+        self.frame_modificar_usuario.destroy()  # cierra la ventana
+        self.ventana_lista_usuarios()  # cargamos la ventana para ver los cambios
+        miConexion.close()
+      except sqlite3.Error as e:
+        messagebox.showerror("Modificando Usuarios", f"Ocurrió un error al modificar usuarios: {str(e)}")
+
     #====================================PRODUCTOS==================================#         
     def ventana_lista_productos(self): #ventana madre sobre la cual edificar el resto de los botones 
         self.frame_lista_productos= Frame(self.frame_center)
